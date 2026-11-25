@@ -1,0 +1,103 @@
+# ============================================
+# Node / Frontend
+# ============================================
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+
+# ============================================
+# Rust / Tauri
+# ============================================
+target/
+src-tauri/target/
+src-tauri/gen/
+src-tauri/WixTools/
+
+# ============================================
+# Modele AI (NIE commitujemy wag)
+# ============================================
+models/
+*.bin
+*.gguf
+*.onnx
+*.pt
+*.pth
+
+# ============================================
+# whisper.cpp (folder testowy — nie commitujemy)
+# ============================================
+whisper.cpp/
+
+# ============================================
+# Audio / Wideo testowe
+# ============================================
+test-audio/
+*.wav
+*.mp3
+*.m4a
+*.flac
+*.ogg
+*.mp4
+*.mkv
+*.webm
+
+# ============================================
+# Czcionki — tylko finalne TTF, nie archiwa
+# ============================================
+src-tauri/resources/fonts/inter-tmp/
+src-tauri/resources/fonts/*.zip
+src-tauri/resources/fonts/*.woff2
+src-tauri/resources/fonts/*.woff
+
+# ============================================
+# Logi
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ============================================
+# Systemy operacyjne
+# ============================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================================
+# IDE / Edytory
+# ============================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ============================================
+# Pliki tymczasowe
+# ============================================
+*.tmp
+*.temp
+*.part
+*.bak
+*.backup
+.cache/
+
+# ============================================
+# Zmienne środowiskowe
+# ============================================
+.env
+.env.local
+.env.*.local
+
+# ============================================
+# Coverage / testy
+# ============================================
+coverage/
+.nyc_output/
