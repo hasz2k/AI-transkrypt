@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.tauri.app/config/2",
+  "$schema": "https://tauri.app",
   "productName": "ai-transkrypt",
   "version": "0.1.1",
   "identifier": "com.hasz2k.aitranskrypt",
@@ -24,6 +24,9 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "macOS": {
+      "minimumSystemVersion": "12.0"
+    },
     "resources": [
       "resources/fonts/Inter-Regular.ttf"
     ],
