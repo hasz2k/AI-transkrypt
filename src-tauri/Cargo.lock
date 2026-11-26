@@ -30,11 +30,12 @@ dependencies = [
 
 [[package]]
 name = "ai-transkrypt"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "futures-util",
  "hound",
+ "libc",
  "num_cpus",
  "printpdf",
  "reqwest",

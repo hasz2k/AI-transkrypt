@@ -41,6 +41,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+}
+
+.app__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .app__title {
@@ -63,6 +71,28 @@ body {
   min-height: 0;
 }
 
+.tester-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.version-badge {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: ui-monospace, "Cascadia Code", Menlo, monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgba(79, 140, 255, 0.12);
+  border: 1px solid rgba(79, 140, 255, 0.3);
+}
+
+.btn--sm {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
 .beta-banner {
   display: flex;
   align-items: center;
@@ -75,6 +105,7 @@ body {
   color: var(--text-dim);
 }
 .beta-banner strong { color: var(--accent); }
+.beta-banner a { color: var(--accent); }
 
 .dropzone {
   border: 2px dashed var(--border);

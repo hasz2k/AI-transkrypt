@@ -1,180 +1,137 @@
-# AI Transkrypt
+# AI Transkrypt (`v0.1.1-beta`)
 
-[🇵🇱 Polski](#-polski) | [🇬🇧 English](#-english)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](LICENSE)
+[![PayPal](https://img.shields.io/badge/PayPal-Wesprzyj%20projekt-00457C?logo=paypal&logoColor=white)](https://paypal.me/hasz2k)
+
+**Lokalna, prywatna aplikacja desktopowa do transkrypcji audio, wideo oraz dźwięku systemowego — bez chmury i bez wysyłania danych na zewnątrz.**
+
+Zbudowana w oparciu o **Tauri v2**, **React 19**, **Rust** oraz **whisper.cpp** z akceleracją sprzętową **Vulkan** i natywnym przechwytywaniem dźwięku w **PipeWire**.
+
+> 🇬🇧 **[English documentation below](#-english-version)**
 
 ---
 
-## 🇵🇱 Polski
+## ✨ Funkcje (`v0.1.1-beta`)
 
-**AI Transkrypt** to darmowa, w 100% lokalna aplikacja desktopowa do transkrypcji audio i wideo na tekst. Działa w pełni offline, bez przesyłania danych do chmury, co zapewnia pełną prywatność. Aplikacja obsługuje formaty PDF i TXT, a interfejs jest w pełni dwujęzyczny (polski/angielski).
+- **100% lokalne przetwarzanie:** nagrania i wygenerowany tekst nigdy nie opuszczają Twojego komputera.
+- **Akceleracja GPU (Vulkan):** szybka transkrypcja na kartach AMD, Intel oraz NVIDIA bez konieczności instalowania ciężkich środowisk CUDA/PyTorch.
+- **Przechwytywanie dźwięku systemowego (Linux / PipeWire):** nagrywanie bezpośrednio z wyjścia audio (np. spotkania online, przeglądarka, wykłady) jednym kliknięciem poprzez `pw-record`.
+- **Szeroka obsługa formatów:** `.wav`, `.mp3`, `.flac`, `.ogg`, `.m4a`, `.mp4`, `.mkv`, `.webm` (dekodowanie i resampling do 16 kHz mono w czystym Ruście).
+- **Eksport dokumentów:** zapis transkrypcji do czystego tekstu (`.txt`) oraz sformatowanego dokumentu **PDF** z pełną obsługą polskich znaków diakrytycznych.
+- **Dwujęzyczny interfejs (PL / EN):** natychmiastowe przełączanie języka aplikacji oraz wybór języka rozpoznawania mowy (Polski, Angielski, Auto).
+- **Narzędzia dla testerów (opt-in):** kopia raportu diagnostycznego środowiska do schowka (bez treści nagrań) oraz bezpośredni skrót do zgłaszania błędów.
 
-### ✨ Główne funkcje
+---
 
-- **100% offline i prywatnie** – żadne dane nie opuszczają Twojego komputera.
-- **Wiele formatów audio/wideo** – obsługa `.wav`, `.mp3`, `.flac`, `.ogg`, `.m4a`, `.mp4`, `.mkv`, `.webm`.
-- **Automatyczny resampling** – konwersja dowolnego pliku do formatu wymaganego przez AI (16 kHz).
-- **Wybór języka transkrypcji** – polski, angielski lub auto-detekcja.
-- **Eksport TXT i PDF** – gotowe notatki z polskimi znakami i automatyczną paginacją.
-- **Menedżer modelu AI** – aplikacja pobierze model (Whisper Small) przy pierwszym uruchomieniu.
-- **Dwujęzyczny interfejs** – przełącznik języka UI (PL/EN).
+## 🚀 Instalacja i uruchamianie (Linux)
 
-### 🚧 Status projektu
+### Gotowe paczki (Releases)
+Pobierz najnowszą paczkę `.AppImage` lub `.deb` z zakładki **[Releases](https://github.com/hasz2k/AI-transkrypt/releases)**:
 
-**Faza 1: MVP (Beta v0.1.0)** – działa na Linuxie (CachyOS/Arch). Wersje na macOS i Windows są w planach.
+```bash
+chmod +x ai-transkrypt_0.1.1_amd64.AppImage
+./ai-transkrypt_0.1.1_amd64.AppImage
 
-### 🖥️ Wymagania systemowe
+Przy pierwszym uruchomieniu aplikacja automatycznie pobierze lokalny model Whisper do katalogu danych użytkownika.
+Wymagania systemowe (Linux)
 
-- **System:** Linux (testowano na CachyOS/Arch)
-- **Karta graficzna:** Zalecana karta z obsługą Vulkan (znacznie przyspiesza transkrypcję)
-- **Miejsce na dysku:** ~1 GB (w tym model AI ~466 MB)
+    Serwer dźwięku PipeWire (pipewire-utils z narzędziem pw-record do nagrywania dźwięku systemowego)
 
-### 🚀 Instalacja i uruchomienie (dla użytkowników)
+    Sterowniki Vulkan (np. mesa-vulkan-drivers dla AMD/Intel)
 
-1. Pobierz plik `.AppImage` (lub `.deb`/`.rpm`) z zakładki [Releases](https://github.com/hasz2k/AI-transkrypt/releases).
-2. Nadaj uprawnienia do wykonania (dla `.AppImage`):
-   ```bash
-   chmod +x ai-transkrypt_0.1.0_amd64.AppImage
-   ./ai-transkrypt_0.1.0_amd64.AppImage
+🛠️ Budowanie ze źródeł
+Wymagania deweloperskie
 
-    Przy pierwszym uruchomieniu aplikacja poprosi o pobranie modelu AI (Whisper Small, ~466 MB).
+    Node.js >= 20 oraz pnpm
 
-    Przeciągnij plik audio/wideo, wybierz język i kliknij Transkrybuj.
+    Rust (stable toolchain via rustup)
 
-🛠️ Kompilacja ze źródeł (dla deweloperów)
+    Zależności systemowe Tauri v2 (webkit2gtk-4.1, gtk3, libayatana-appindicator, librsvg, cmake, clang, shaderc / nagłówki Vulkan)
 
-Wymagane narzędzia: Rust, Node.js, pnpm, Tauri CLI.
+Bash
 
-Zależności systemowe (Arch/CachyOS):
-bash
-
-sudo pacman -S webkit2gtk-4.1 base-devel curl wget file openssl \
-  appmenu-gtk-module libappindicator-gtk3 librsvg xdotool ffmpeg \
-  vulkan-headers vulkan-icd-loader shaderc spirv-headers cmake clang
-
-Kroki:
-bash
-
-git clone https://github.com/hasz2k/AI-transkrypt.git
+git clone [https://github.com/hasz2k/AI-transkrypt.git](https://github.com/hasz2k/AI-transkrypt.git)
 cd AI-transkrypt
 pnpm install
-pnpm tauri dev      # Tryb deweloperski
-pnpm tauri build    # Budowanie wersji produkcyjnej
+pnpm tauri dev
 
-📂 Struktura projektu
-text
+Budowanie paczki produkcyjnej:
+Bash
 
-src/                    # Frontend (React + TypeScript)
-├── components/         # Komponenty UI
-├── lib/tauri.ts        # Wrapper na komendy Tauri
-└── App.tsx
+pnpm tauri build
 
-src-tauri/              # Backend (Rust)
-├── src/
-│   ├── audio/decode.rs # Dekodowanie audio i resampling
-│   ├── commands/       # Komendy (transkrypcja, eksport, model)
-│   └── lib.rs
-├── resources/fonts/    # Czcionka Inter (dla PDF)
-└── Cargo.toml
+🗺️ Plan rozwoju (Roadmap)
 
-⚠️ Znane ograniczenia (Beta)
+Projekt rozwijany jest w modelu Open Core — podstawowa wersja desktopowa dla systemu Linux pozostaje darmowa i otwarta na licencji AGPL-3.0.
 
-    Wymaga Linuksa (macOS/Windows w kolejnych fazach).
+    Faza 1 (v0.1.x-beta) — Fundamenty i stabilizacja [Aktualna]:
 
-    Transkrypcja na samym CPU jest znacznie wolniejsza niż na GPU.
+        Lokalna transkrypcja plików audio/wideo (whisper.cpp + Vulkan).
 
-    Brak możliwości anulowania transkrypcji w trakcie.
+        Nagrywanie dźwięku systemowego w PipeWire (pw-record).
 
+        Eksport do .txt i .pdf, anulowanie zadań w locie, raporty diagnostyczne opt-in.
+
+    Faza 2 (v0.2.0) — Rozszerzenie funkcji Open Source:
+
+        Wybór rozmiaru i wariantu modelu Whisper (base, small, medium, large-v3-turbo) bezpośrednio w interfejsie.
+
+        Znaczniki czasu (timestamps) oraz eksport napisów w formatach .srt i .vtt.
+
+        Wybór konkretnego źródła audio (mikrofon vs. wybrana aplikacja/okno w PipeWire).
+
+        Oficjalne wydania dla macOS (Apple Silicon / Intel) oraz Windows.
+
+    Faza 3 — Wersja Pro (funkcje zaawansowane):
+
+        Rozpoznawanie mówców (diaryzacja — podział wypowiedzi na osoby).
+
+        Automatyczne podsumowania spotkań, listy zadań (action items) i tłumaczenia z lokalnymi modelami LLM (np. Ollama).
+
+        Przetwarzanie wsadowe (kolejkowanie wielu plików jednocześnie).
+
+☕ Wsparcie projektu
+
+Jeśli aplikacja oszczędza Twój czas i chcesz wesprzeć dalszy rozwój wersji Open Source (m.in. porty na macOS i Windows):
+
+👉 Wesprzyj przez PayPal (paypal.me/hasz2k)
 📄 Licencja
 
-Projekt jest obecnie w fazie beta. Licencja zostanie ogłoszona przed pierwszym publicznym wydaniem (rozważane: AGPL-3.0 lub BSL).
-🇬🇧 English
+Kod źródłowy wydania Open Source udostępniany jest na licencji GNU Affero General Public License v3.0 (AGPL-3.0) — szczegóły w pliku LICENSE.
+🇬🇧 English Version
 
-AI Transkrypt is a free, 100% local desktop application for transcribing audio and video to text. It works fully offline, without sending any data to the cloud, ensuring complete privacy. The app supports PDF and TXT export, and the interface is fully bilingual (Polish/English).
-✨ Key Features
+AI Transkrypt (v0.1.1-beta) is a local-first desktop application for audio, video, and system audio transcription — running 100% offline with zero cloud dependencies.
 
-    100% offline & private – no data leaves your computer.
+Built with Tauri v2, React 19, Rust, and whisper.cpp with Vulkan GPU acceleration and native PipeWire audio capture.
+✨ Key Features (v0.1.1-beta)
 
-    Multiple audio/video formats – supports .wav, .mp3, .flac, .ogg, .m4a, .mp4, .mkv, .webm.
+    100% Local & Private: Audio files and transcripts never leave your machine.
 
-    Automatic resampling – converts any file to the format required by AI (16 kHz).
+    Vulkan GPU Acceleration: Fast hardware-accelerated inference on AMD, Intel, and NVIDIA GPUs without heavy CUDA/Python dependencies.
 
-    Transcription language selection – Polish, English, or auto-detect.
+    System Audio Capture (Linux / PipeWire): Record desktop audio directly via pw-record with a single click.
 
-    TXT and PDF export – ready-to-print notes with proper characters and automatic pagination.
+    Multi-format Support: .wav, .mp3, .flac, .ogg, .m4a, .mp4, .mkv, .webm decoded and resampled to 16 kHz mono natively in Rust.
 
-    AI Model Manager – the app downloads the model (Whisper Small) on first launch.
+    TXT & PDF Export: Export clean text or formatted PDF documents with full Unicode/diacritic support.
 
-    Bilingual interface – UI language toggle (PL/EN).
+    Bilingual UI (PL / EN): Switch between Polish and English interface and transcription languages (pl, en, auto).
 
-🚧 Project Status
+    Opt-in Tester Diagnostics: One-click copy of anonymized hardware/environment info (OS, kernel, Wayland/X11, GPU, PipeWire server, model status) and direct GitHub Issue reporting.
 
-Phase 1: MVP (Beta v0.1.0) – works on Linux (CachyOS/Arch). macOS and Windows versions are planned.
-🖥️ System Requirements
+🗺️ Roadmap
 
-    OS: Linux (tested on CachyOS/Arch)
+    Phase 1 (v0.1.x-beta) — Core MVP & Stabilization [Current]: Local transcription (whisper.cpp + Vulkan), PipeWire system capture, TXT/PDF export, task cancellation, opt-in diagnostics.
 
-    GPU: Vulkan-capable graphics card recommended (significantly speeds up transcription).
+    Phase 2 (v0.2.0) — Open Source Expansion: In-app Whisper model manager (base, small, medium, large-v3-turbo), timestamps & .srt/.vtt subtitle export, per-app/mic audio source selector, official macOS and Windows builds.
 
-    Disk space: ~1 GB (including AI model ~466 MB).
+    Phase 3 — Pro Edition: Speaker diarization, local LLM meeting summaries & action items (Ollama integration), and batch queue processing.
 
-🚀 Installation & Running (for users)
+☕ Support the Project
 
-    Download the .AppImage (or .deb/.rpm) from the Releases page.
+If you find AI Transkrypt useful and want to support its ongoing open-source development:
 
-    Make it executable (for .AppImage):
-    bash
-
-    chmod +x ai-transkrypt_0.1.0_amd64.AppImage
-    ./ai-transkrypt_0.1.0_amd64.AppImage
-
-    On first launch, the app will prompt you to download the AI model (Whisper Small, ~466 MB).
-
-    Drag & drop an audio/video file, select the language, and click Transcribe.
-
-🛠️ Building from Source (for developers)
-
-Required tools: Rust, Node.js, pnpm, Tauri CLI.
-
-System dependencies (Arch/CachyOS):
-bash
-
-sudo pacman -S webkit2gtk-4.1 base-devel curl wget file openssl \
-  appmenu-gtk-module libappindicator-gtk3 librsvg xdotool ffmpeg \
-  vulkan-headers vulkan-icd-loader shaderc spirv-headers cmake clang
-
-Steps:
-bash
-
-git clone https://github.com/hasz2k/AI-transkrypt.git
-cd AI-transkrypt
-pnpm install
-pnpm tauri dev      # Development mode
-pnpm tauri build    # Production build
-
-📂 Project Structure
-text
-
-src/                    # Frontend (React + TypeScript)
-├── components/         # UI Components
-├── lib/tauri.ts        # Tauri commands wrapper
-└── App.tsx
-
-src-tauri/              # Backend (Rust)
-├── src/
-│   ├── audio/decode.rs # Audio decoding and resampling
-│   ├── commands/       # Commands (transcription, export, model)
-│   └── lib.rs
-├── resources/fonts/    # Inter font (for PDF)
-└── Cargo.toml
-
-⚠️ Known Limitations (Beta)
-
-    Linux only (macOS/Windows in future phases).
-
-    CPU-only transcription is much slower than GPU.
-
-    No way to cancel transcription mid-process.
-
+👉 Donate via PayPal (paypal.me/hasz2k)
 📄 License
 
-The project is currently in beta. The license will be announced before the first public release (considering: AGPL-3.0 or BSL).
+Licensed under AGPL-3.0. See LICENSE for details.

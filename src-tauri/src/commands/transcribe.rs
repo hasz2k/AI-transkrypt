@@ -1,6 +1,10 @@
 use crate::audio::decode::decode_to_16k_mono;
+use crate::AppState;
 use anyhow::{anyhow, Result};
+use std::ffi::c_void;
 use std::path::PathBuf;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use tauri::{AppHandle, Emitter, Manager};
 use whisper_rs::{FullParams, SamplingStrategy, WhisperContext, WhisperContextParameters};
 
@@ -9,13 +13,29 @@ pub struct ProgressPayload {
     pub percent: u8,
 }
 
+// Funkcja trampoliny – wywoływana przez Whisper w trakcie obliczeń
+extern "C" fn abort_callback_trampoline(user_data: *mut c_void) -> bool {
+    if user_data.is_null() {
+        return false;
+    }
+    let flag = unsafe { &*(user_data as *const AtomicBool) };
+    flag.load(Ordering::Relaxed)
+}
+
+#[tauri::command]
+pub fn cancel_transcription(state: tauri::State<AppState>) {
+    state.cancel_flag.store(true, Ordering::Relaxed);
+}
+
 #[tauri::command]
 pub async fn transcribe_file(
     app: AppHandle,
     path: String,
     language: String,
 ) -> Result<String, String> {
-    transcribe_inner(app, path, language).await.map_err(|e| e.to_string())
+    transcribe_inner(app, path, language)
+    .await
+    .map_err(|e| e.to_string())
 }
 
 async fn transcribe_inner(app: AppHandle, path: String, language: String) -> Result<String> {
@@ -23,6 +43,10 @@ async fn transcribe_inner(app: AppHandle, path: String, language: String) -> Res
     if !file_path.exists() {
         return Err(anyhow!("Plik nie istnieje: {}", path));
     }
+
+    // Reset flagi anulowania przed startem
+    let cancel_flag = app.state::<AppState>().cancel_flag.clone();
+    cancel_flag.store(false, Ordering::Relaxed);
 
     // Ścieżka do modelu w app_data_dir
     let app_data = app
@@ -40,14 +64,17 @@ async fn transcribe_inner(app: AppHandle, path: String, language: String) -> Res
 
     // Dekodowanie audio (blokujące – przenieś do spawn_blocking)
     let app_clone = app.clone();
-    let audio_samples = tokio::task::spawn_blocking(move || {
-        decode_to_16k_mono(&file_path)
-    })
+    let audio_samples = tokio::task::spawn_blocking(move || decode_to_16k_mono(&file_path))
     .await
     .map_err(|e| anyhow!("Błąd zadania dekodowania: {e}"))??;
 
     if audio_samples.is_empty() {
         return Err(anyhow!("Brak danych audio"));
+    }
+
+    // Jeśli użytkownik anulował już na etapie dekodowania
+    if cancel_flag.load(Ordering::Relaxed) {
+        return Err(anyhow!("Transkrypcja anulowana"));
     }
 
     // Transkrypcja
@@ -83,9 +110,26 @@ async fn transcribe_inner(app: AppHandle, path: String, language: String) -> Res
             let _ = app_for_cb.emit("transcription-progress", ProgressPayload { percent });
         });
 
-        state
-        .full(params, &audio_samples)
-        .map_err(|e| anyhow!("Błąd transkrypcji: {e}"))?;
+        // Przygotuj wskaźnik do flagi – musi żyć przez cały czas trwania state.full()
+        let flag_ptr = Arc::into_raw(cancel_flag.clone()) as *mut c_void;
+
+        unsafe {
+            params.set_abort_callback(Some(abort_callback_trampoline));
+            params.set_abort_callback_user_data(flag_ptr);
+        }
+
+        let full_res = state.full(params, &audio_samples);
+
+        // Po zakończeniu (sukces lub błąd) – odzyskaj wskaźnik, żeby uniknąć wycieku pamięci
+        unsafe {
+            let _ = Arc::from_raw(flag_ptr as *const AtomicBool);
+        }
+
+        if cancel_flag.load(Ordering::Relaxed) {
+            return Err(anyhow!("Transkrypcja anulowana"));
+        }
+
+        full_res.map_err(|e| anyhow!("Błąd transkrypcji: {e}"))?;
 
         let mut text = String::new();
         for seg in state.as_iter() {
