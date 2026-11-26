@@ -1,4 +1,4 @@
-use std::process::{Child, Command, Stdio};
+use std::process::Child;
 use std::sync::Mutex;
 use tauri::State;
 
@@ -7,15 +7,17 @@ pub struct CaptureState {
     pub output_path: Mutex<Option<String>>,
 }
 
+#[cfg(target_os = "linux")]
 #[tauri::command]
 pub fn start_system_capture(state: State<CaptureState>) -> Result<(), String> {
+    use std::process::{Command, Stdio};
+
     let mut recorder_guard = state.recorder.lock().unwrap();
 
     if recorder_guard.is_some() {
         return Err("Nagrywanie już trwa".to_string());
     }
 
-    // 1. Pobierz domyślne wyjście audio (sink)
     let output = Command::new("pactl")
     .arg("get-default-sink")
     .output()
@@ -26,16 +28,14 @@ pub fn start_system_capture(state: State<CaptureState>) -> Result<(), String> {
         return Err("Nie można znaleźć domyślnego wyjścia audio".to_string());
     }
 
-    // 2. Ścieżka do pliku tymczasowego
     let temp_path = std::env::temp_dir().join("ai_transkrypt_capture.wav");
     let path_str = temp_path.to_string_lossy().to_string();
 
-    // 3. Uruchom pw-record z właściwością stream.capture.sink
     let child = Command::new("pw-record")
     .arg("--target")
-    .arg(&sink_name) // <-- bez .monitor
+    .arg(&sink_name)
     .arg("-P")
-    .arg("{ stream.capture.sink = true }") // <-- kluczowy parametr
+    .arg("{ stream.capture.sink = true }")
     .arg("--format")
     .arg("s16")
     .arg("--rate")
@@ -54,18 +54,17 @@ pub fn start_system_capture(state: State<CaptureState>) -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(target_os = "linux")]
 #[tauri::command]
 pub fn stop_system_capture(state: State<CaptureState>) -> Result<String, String> {
     let mut recorder_guard = state.recorder.lock().unwrap();
 
     if let Some(mut child) = recorder_guard.take() {
-        // Wyślij SIGINT (Ctrl+C) zamiast SIGKILL
         let pid = child.id() as i32;
         unsafe {
             libc::kill(pid, libc::SIGINT);
         }
 
-        // Poczekaj na zakończenie procesu (zamykanie pliku)
         let _ = child.wait();
 
         let path = state.output_path.lock().unwrap().take();
@@ -73,4 +72,16 @@ pub fn stop_system_capture(state: State<CaptureState>) -> Result<String, String>
     } else {
         Err("Nagrywanie nie jest aktywne".to_string())
     }
+}
+
+#[cfg(not(target_os = "linux"))]
+#[tauri::command]
+pub fn start_system_capture(_state: State<CaptureState>) -> Result<(), String> {
+    Err("Nagrywanie dźwięku systemowego na macOS jest w trakcie wdrażania — w wersji testowej wybierz plik audio/wideo.".to_string())
+}
+
+#[cfg(not(target_os = "linux"))]
+#[tauri::command]
+pub fn stop_system_capture(_state: State<CaptureState>) -> Result<String, String> {
+    Err("Nagrywanie nie jest aktywne".to_string())
 }
