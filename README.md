@@ -41,7 +41,7 @@ Most transcription tools send your recordings to someone else's server. AI Trans
 | | |
 |---|---|
 | 🔒 **100% local** | Audio files and transcripts never leave your machine. |
-| ⚡ **Vulkan GPU acceleration** | Fast inference on AMD, Intel and NVIDIA GPUs, no CUDA/PyTorch required. |
+| ⚡ **Vulkan GPU acceleration** | Fast inference on AMD and Intel GPUs, no CUDA/PyTorch required. NVIDIA should work via Vulkan but is **not tested yet**. |
 | 🎧 **System audio capture** | Record desktop audio (online meetings, browser, lectures) with one click via PipeWire `pw-record`. |
 | 🎞️ **Wide format support** | `.wav` `.mp3` `.flac` `.ogg` `.m4a` `.mp4` `.mkv` `.webm`, decoded and resampled to 16 kHz mono in pure Rust. |
 | 📄 **TXT & PDF export** | Plain text or a formatted PDF with full Unicode / Polish diacritics support. |
@@ -56,7 +56,9 @@ Most transcription tools send your recordings to someone else's server. AI Trans
 #### Requirements
 
 - **PipeWire** with `pw-record` (package `pipewire-utils` or equivalent), required for system audio capture
-- **Vulkan drivers**, e.g. `mesa-vulkan-drivers` for AMD/Intel or the proprietary NVIDIA driver
+- **Vulkan drivers**, e.g. `mesa-vulkan-drivers` for AMD/Intel
+
+> ⚠️ **NVIDIA GPUs have not been tested yet.** If you run AI Transkrypt on an NVIDIA card, please share your results (working or not) in [GitHub Issues](https://github.com/hasz2k/AI-transkrypt/issues), ideally with the built-in diagnostics report.
 
 #### Prebuilt packages
 
@@ -180,7 +182,7 @@ Większość narzędzi do transkrypcji wysyła nagrania na cudzy serwer. AI Tran
 | | |
 |---|---|
 | 🔒 **100% lokalnie** | Nagrania i wygenerowany tekst nigdy nie opuszczają Twojego komputera. |
-| ⚡ **Akceleracja GPU (Vulkan)** | Szybka transkrypcja na kartach AMD, Intel i NVIDIA, bez instalowania CUDA/PyTorch. |
+| ⚡ **Akceleracja GPU (Vulkan)** | Szybka transkrypcja na kartach AMD i Intel, bez instalowania CUDA/PyTorch. NVIDIA powinna działać przez Vulkan, ale **nie była jeszcze testowana**. |
 | 🎧 **Nagrywanie dźwięku systemowego** | Nagrywanie prosto z wyjścia audio (spotkania online, przeglądarka, wykłady) jednym kliknięciem przez PipeWire `pw-record`. |
 | 🎞️ **Wiele formatów** | `.wav` `.mp3` `.flac` `.ogg` `.m4a` `.mp4` `.mkv` `.webm`, dekodowanie i resampling do 16 kHz mono w czystym Ruście. |
 | 📄 **Eksport TXT i PDF** | Czysty tekst albo sformatowany PDF z pełną obsługą polskich znaków. |
@@ -195,7 +197,9 @@ Większość narzędzi do transkrypcji wysyła nagrania na cudzy serwer. AI Tran
 #### Wymagania
 
 - **PipeWire** z narzędziem `pw-record` (pakiet `pipewire-utils` lub odpowiednik), potrzebne do nagrywania dźwięku systemowego
-- **Sterowniki Vulkan**, np. `mesa-vulkan-drivers` dla AMD/Intel albo własnościowy sterownik NVIDIA
+- **Sterowniki Vulkan**, np. `mesa-vulkan-drivers` dla AMD/Intel
+
+> ⚠️ **Karty NVIDIA nie były jeszcze testowane.** Jeśli uruchamiasz AI Transkrypt na karcie NVIDIA, podziel się wynikiem (działa czy nie) w [GitHub Issues](https://github.com/hasz2k/AI-transkrypt/issues), najlepiej z dołączonym raportem diagnostycznym.
 
 #### Gotowe paczki
 
