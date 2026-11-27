@@ -1,137 +1,294 @@
-# AI Transkrypt (`v0.1.1-beta`)
+<div align="center">
 
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPLv3-blue.svg)](LICENSE)
-[![PayPal](https://img.shields.io/badge/PayPal-Wesprzyj%20projekt-00457C?logo=paypal&logoColor=white)](https://paypal.me/hasz2k)
+# AI Transkrypt
 
-**Lokalna, prywatna aplikacja desktopowa do transkrypcji audio, wideo oraz dźwięku systemowego — bez chmury i bez wysyłania danych na zewnątrz.**
+**Local, private desktop transcription for audio, video and system sound — no cloud, no uploads.**
 
-Zbudowana w oparciu o **Tauri v2**, **React 19**, **Rust** oraz **whisper.cpp** z akceleracją sprzętową **Vulkan** i natywnym przechwytywaniem dźwięku w **PipeWire**.
+[![Version](https://img.shields.io/badge/version-0.1.1--beta-orange.svg)](https://github.com/hasz2k/AI-transkrypt/releases)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](#-installation)
+[![PayPal](https://img.shields.io/badge/PayPal-Support%20the%20project-00457C?logo=paypal&logoColor=white)](https://paypal.me/hasz2k)
 
-> 🇬🇧 **[English documentation below](#-english-version)**
+[English](#-english) · [Polski](#-polski)
 
----
+<!-- Add a screenshot or GIF here, e.g.: ![AI Transkrypt](docs/screenshot.png) -->
 
-## ✨ Funkcje (`v0.1.1-beta`)
-
-- **100% lokalne przetwarzanie:** nagrania i wygenerowany tekst nigdy nie opuszczają Twojego komputera.
-- **Akceleracja GPU (Vulkan):** szybka transkrypcja na kartach AMD, Intel oraz NVIDIA bez konieczności instalowania ciężkich środowisk CUDA/PyTorch.
-- **Przechwytywanie dźwięku systemowego (Linux / PipeWire):** nagrywanie bezpośrednio z wyjścia audio (np. spotkania online, przeglądarka, wykłady) jednym kliknięciem poprzez `pw-record`.
-- **Szeroka obsługa formatów:** `.wav`, `.mp3`, `.flac`, `.ogg`, `.m4a`, `.mp4`, `.mkv`, `.webm` (dekodowanie i resampling do 16 kHz mono w czystym Ruście).
-- **Eksport dokumentów:** zapis transkrypcji do czystego tekstu (`.txt`) oraz sformatowanego dokumentu **PDF** z pełną obsługą polskich znaków diakrytycznych.
-- **Dwujęzyczny interfejs (PL / EN):** natychmiastowe przełączanie języka aplikacji oraz wybór języka rozpoznawania mowy (Polski, Angielski, Auto).
-- **Narzędzia dla testerów (opt-in):** kopia raportu diagnostycznego środowiska do schowka (bez treści nagrań) oraz bezpośredni skrót do zgłaszania błędów.
+</div>
 
 ---
 
-## 🚀 Instalacja i uruchamianie (Linux)
+## 🇬🇧 English
 
-### Gotowe paczki (Releases)
-Pobierz najnowszą paczkę `.AppImage` lub `.deb` z zakładki **[Releases](https://github.com/hasz2k/AI-transkrypt/releases)**:
+### Table of contents
+
+- [Why AI Transkrypt?](#why-ai-transkrypt)
+- [Features](#-features)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Building from source](#%EF%B8%8F-building-from-source)
+- [Tech stack](#-tech-stack)
+- [Roadmap](#%EF%B8%8F-roadmap)
+- [Reporting bugs](#-reporting-bugs)
+- [Support the project](#-support-the-project)
+- [License](#-license)
+
+### Why AI Transkrypt?
+
+Most transcription tools send your recordings to someone else's server. AI Transkrypt runs **whisper.cpp** directly on your machine, so interviews, meetings and lectures stay on your computer. It uses Vulkan for GPU acceleration, so you don't need CUDA, Python or PyTorch.
+
+### ✨ Features
+
+| | |
+|---|---|
+| 🔒 **100% local** | Audio files and transcripts never leave your machine. |
+| ⚡ **Vulkan GPU acceleration** | Fast inference on AMD, Intel and NVIDIA GPUs, no CUDA/PyTorch required. |
+| 🎧 **System audio capture** | Record desktop audio (online meetings, browser, lectures) with one click via PipeWire `pw-record`. |
+| 🎞️ **Wide format support** | `.wav` `.mp3` `.flac` `.ogg` `.m4a` `.mp4` `.mkv` `.webm`, decoded and resampled to 16 kHz mono in pure Rust. |
+| 📄 **TXT & PDF export** | Plain text or a formatted PDF with full Unicode / Polish diacritics support. |
+| 🌍 **Bilingual UI** | Switch the interface between Polish and English. Recognition language: Polish, English or Auto. |
+| 🛑 **Task cancellation** | Stop a running transcription at any time. |
+| 🧪 **Opt-in diagnostics** | Copy an environment report (no recording content) to the clipboard and open a GitHub issue in one click. |
+
+### 📦 Installation
+
+> Currently **Linux only**. Windows and macOS builds are planned for v0.2.0.
+
+#### Requirements
+
+- **PipeWire** with `pw-record` (package `pipewire-utils` or equivalent), required for system audio capture
+- **Vulkan drivers**, e.g. `mesa-vulkan-drivers` for AMD/Intel or the proprietary NVIDIA driver
+
+#### Prebuilt packages
+
+Download the latest `.AppImage` or `.deb` from **[Releases](https://github.com/hasz2k/AI-transkrypt/releases)**.
+
+**AppImage:**
 
 ```bash
 chmod +x ai-transkrypt_0.1.1_amd64.AppImage
 ./ai-transkrypt_0.1.1_amd64.AppImage
+```
 
-Przy pierwszym uruchomieniu aplikacja automatycznie pobierze lokalny model Whisper do katalogu danych użytkownika.
-Wymagania systemowe (Linux)
+**Debian / Ubuntu:**
 
-    Serwer dźwięku PipeWire (pipewire-utils z narzędziem pw-record do nagrywania dźwięku systemowego)
+```bash
+sudo apt install ./ai-transkrypt_0.1.1_amd64.deb
+```
 
-    Sterowniki Vulkan (np. mesa-vulkan-drivers dla AMD/Intel)
+On first launch the app downloads a local Whisper model into your user data directory. This happens once and needs an internet connection. After that, transcription runs fully offline.
 
-🛠️ Budowanie ze źródeł
-Wymagania deweloperskie
+### 🎙️ Usage
 
-    Node.js >= 20 oraz pnpm
+1. Launch the app and wait for the model download to finish (first run only).
+2. Choose the recognition language: **Polish**, **English** or **Auto**.
+3. Either **open a file** (audio or video) or **record system audio** with one click.
+4. Start the transcription. You can cancel it at any time.
+5. Export the result to **`.txt`** or **`.pdf`**.
 
-    Rust (stable toolchain via rustup)
+### 🛠️ Building from source
 
-    Zależności systemowe Tauri v2 (webkit2gtk-4.1, gtk3, libayatana-appindicator, librsvg, cmake, clang, shaderc / nagłówki Vulkan)
+#### Development requirements
 
-Bash
+- **Node.js ≥ 20** and **pnpm**
+- **Rust** (stable toolchain via [rustup](https://rustup.rs))
+- **Tauri v2 system dependencies**: `webkit2gtk-4.1`, `gtk3`, `libayatana-appindicator`, `librsvg`, `cmake`, `clang`, `shaderc` / Vulkan headers
 
-git clone [https://github.com/hasz2k/AI-transkrypt.git](https://github.com/hasz2k/AI-transkrypt.git)
+#### Run in development mode
+
+```bash
+git clone https://github.com/hasz2k/AI-transkrypt.git
 cd AI-transkrypt
 pnpm install
 pnpm tauri dev
+```
 
-Budowanie paczki produkcyjnej:
-Bash
+#### Production build
 
+```bash
 pnpm tauri build
+```
 
-🗺️ Plan rozwoju (Roadmap)
+The packages are written to `src-tauri/target/release/bundle/`.
 
-Projekt rozwijany jest w modelu Open Core — podstawowa wersja desktopowa dla systemu Linux pozostaje darmowa i otwarta na licencji AGPL-3.0.
+### 🧰 Tech stack
 
-    Faza 1 (v0.1.x-beta) — Fundamenty i stabilizacja [Aktualna]:
+| Layer | Technology |
+|---|---|
+| Desktop shell | [Tauri v2](https://tauri.app) |
+| Frontend | React 19 |
+| Backend | Rust |
+| Speech recognition | [whisper.cpp](https://github.com/ggerganov/whisper.cpp) + Vulkan |
+| Audio capture | PipeWire (`pw-record`) |
 
-        Lokalna transkrypcja plików audio/wideo (whisper.cpp + Vulkan).
+### 🗺️ Roadmap
 
-        Nagrywanie dźwięku systemowego w PipeWire (pw-record).
+AI Transkrypt follows an **Open Core** model: the core desktop app stays free and open source under AGPL-3.0.
 
-        Eksport do .txt i .pdf, anulowanie zadań w locie, raporty diagnostyczne opt-in.
+- [x] **Phase 1 — v0.1.x-beta: Core MVP & stabilization** *(current)*
+  - [x] Local transcription of audio/video files (whisper.cpp + Vulkan)
+  - [x] System audio capture via PipeWire
+  - [x] TXT and PDF export
+  - [x] Task cancellation
+  - [x] Opt-in diagnostics
+- [ ] **Phase 2 — v0.2.0: Open source expansion**
+  - [ ] In-app Whisper model manager (`base`, `small`, `medium`, `large-v3-turbo`)
+  - [ ] Timestamps and `.srt` / `.vtt` subtitle export
+  - [ ] Audio source selector (microphone vs. a specific app/window in PipeWire)
+  - [ ] Official Windows and macOS (Apple Silicon / Intel) builds
+- [ ] **Phase 3 — Pro edition**
+  - [ ] Speaker diarization
+  - [ ] Meeting summaries, action items and translation with local LLMs (e.g. Ollama)
+  - [ ] Batch queue processing
 
-    Faza 2 (v0.2.0) — Rozszerzenie funkcji Open Source:
+### 🐛 Reporting bugs
 
-        Wybór rozmiaru i wariantu modelu Whisper (base, small, medium, large-v3-turbo) bezpośrednio w interfejsie.
+Please open an issue on **[GitHub Issues](https://github.com/hasz2k/AI-transkrypt/issues)**. Use the built-in **diagnostics** button to copy your environment report (OS, kernel, Wayland/X11, GPU, PipeWire server, model status) and paste it into the issue. The report never includes your recordings or transcripts.
 
-        Znaczniki czasu (timestamps) oraz eksport napisów w formatach .srt i .vtt.
+### ☕ Support the project
 
-        Wybór konkretnego źródła audio (mikrofon vs. wybrana aplikacja/okno w PipeWire).
+If AI Transkrypt saves you time and you'd like to support its open-source development (including the Windows and macOS ports):
 
-        Oficjalne wydania dla macOS (Apple Silicon / Intel) oraz Windows.
+👉 **[Donate via PayPal](https://paypal.me/hasz2k)**
 
-    Faza 3 — Wersja Pro (funkcje zaawansowane):
+### 📄 License
 
-        Rozpoznawanie mówców (diaryzacja — podział wypowiedzi na osoby).
+The open-source edition is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**. See [LICENSE](LICENSE) for details.
 
-        Automatyczne podsumowania spotkań, listy zadań (action items) i tłumaczenia z lokalnymi modelami LLM (np. Ollama).
+---
 
-        Przetwarzanie wsadowe (kolejkowanie wielu plików jednocześnie).
+## 🇵🇱 Polski
 
-☕ Wsparcie projektu
+### Spis treści
 
-Jeśli aplikacja oszczędza Twój czas i chcesz wesprzeć dalszy rozwój wersji Open Source (m.in. porty na macOS i Windows):
+- [Dlaczego AI Transkrypt?](#dlaczego-ai-transkrypt)
+- [Funkcje](#-funkcje)
+- [Instalacja](#-instalacja)
+- [Jak używać](#%EF%B8%8F-jak-używać)
+- [Budowanie ze źródeł](#%EF%B8%8F-budowanie-ze-źródeł)
+- [Technologie](#-technologie)
+- [Plan rozwoju](#%EF%B8%8F-plan-rozwoju)
+- [Zgłaszanie błędów](#-zgłaszanie-błędów)
+- [Wsparcie projektu](#-wsparcie-projektu)
+- [Licencja](#-licencja)
 
-👉 Wesprzyj przez PayPal (paypal.me/hasz2k)
-📄 Licencja
+### Dlaczego AI Transkrypt?
 
-Kod źródłowy wydania Open Source udostępniany jest na licencji GNU Affero General Public License v3.0 (AGPL-3.0) — szczegóły w pliku LICENSE.
-🇬🇧 English Version
+Większość narzędzi do transkrypcji wysyła nagrania na cudzy serwer. AI Transkrypt uruchamia **whisper.cpp** bezpośrednio na Twoim komputerze, więc wywiady, spotkania i wykłady nigdzie nie wychodzą. Akceleracja GPU działa przez Vulkan, więc nie potrzebujesz CUDA, Pythona ani PyTorcha.
 
-AI Transkrypt (v0.1.1-beta) is a local-first desktop application for audio, video, and system audio transcription — running 100% offline with zero cloud dependencies.
+### ✨ Funkcje
 
-Built with Tauri v2, React 19, Rust, and whisper.cpp with Vulkan GPU acceleration and native PipeWire audio capture.
-✨ Key Features (v0.1.1-beta)
+| | |
+|---|---|
+| 🔒 **100% lokalnie** | Nagrania i wygenerowany tekst nigdy nie opuszczają Twojego komputera. |
+| ⚡ **Akceleracja GPU (Vulkan)** | Szybka transkrypcja na kartach AMD, Intel i NVIDIA, bez instalowania CUDA/PyTorch. |
+| 🎧 **Nagrywanie dźwięku systemowego** | Nagrywanie prosto z wyjścia audio (spotkania online, przeglądarka, wykłady) jednym kliknięciem przez PipeWire `pw-record`. |
+| 🎞️ **Wiele formatów** | `.wav` `.mp3` `.flac` `.ogg` `.m4a` `.mp4` `.mkv` `.webm`, dekodowanie i resampling do 16 kHz mono w czystym Ruście. |
+| 📄 **Eksport TXT i PDF** | Czysty tekst albo sformatowany PDF z pełną obsługą polskich znaków. |
+| 🌍 **Dwujęzyczny interfejs** | Przełączanie interfejsu między polskim i angielskim. Język rozpoznawania: polski, angielski lub automatyczny. |
+| 🛑 **Anulowanie zadań** | Trwającą transkrypcję możesz przerwać w dowolnym momencie. |
+| 🧪 **Diagnostyka (opt-in)** | Kopiowanie raportu środowiska (bez treści nagrań) do schowka i zgłaszanie błędu na GitHubie jednym kliknięciem. |
 
-    100% Local & Private: Audio files and transcripts never leave your machine.
+### 📦 Instalacja
 
-    Vulkan GPU Acceleration: Fast hardware-accelerated inference on AMD, Intel, and NVIDIA GPUs without heavy CUDA/Python dependencies.
+> Obecnie **tylko Linux**. Wersje na Windows i macOS są planowane w v0.2.0.
 
-    System Audio Capture (Linux / PipeWire): Record desktop audio directly via pw-record with a single click.
+#### Wymagania
 
-    Multi-format Support: .wav, .mp3, .flac, .ogg, .m4a, .mp4, .mkv, .webm decoded and resampled to 16 kHz mono natively in Rust.
+- **PipeWire** z narzędziem `pw-record` (pakiet `pipewire-utils` lub odpowiednik), potrzebne do nagrywania dźwięku systemowego
+- **Sterowniki Vulkan**, np. `mesa-vulkan-drivers` dla AMD/Intel albo własnościowy sterownik NVIDIA
 
-    TXT & PDF Export: Export clean text or formatted PDF documents with full Unicode/diacritic support.
+#### Gotowe paczki
 
-    Bilingual UI (PL / EN): Switch between Polish and English interface and transcription languages (pl, en, auto).
+Pobierz najnowszy plik `.AppImage` lub `.deb` z zakładki **[Releases](https://github.com/hasz2k/AI-transkrypt/releases)**.
 
-    Opt-in Tester Diagnostics: One-click copy of anonymized hardware/environment info (OS, kernel, Wayland/X11, GPU, PipeWire server, model status) and direct GitHub Issue reporting.
+**AppImage:**
 
-🗺️ Roadmap
+```bash
+chmod +x ai-transkrypt_0.1.1_amd64.AppImage
+./ai-transkrypt_0.1.1_amd64.AppImage
+```
 
-    Phase 1 (v0.1.x-beta) — Core MVP & Stabilization [Current]: Local transcription (whisper.cpp + Vulkan), PipeWire system capture, TXT/PDF export, task cancellation, opt-in diagnostics.
+**Debian / Ubuntu:**
 
-    Phase 2 (v0.2.0) — Open Source Expansion: In-app Whisper model manager (base, small, medium, large-v3-turbo), timestamps & .srt/.vtt subtitle export, per-app/mic audio source selector, official macOS and Windows builds.
+```bash
+sudo apt install ./ai-transkrypt_0.1.1_amd64.deb
+```
 
-    Phase 3 — Pro Edition: Speaker diarization, local LLM meeting summaries & action items (Ollama integration), and batch queue processing.
+Przy pierwszym uruchomieniu aplikacja pobiera lokalny model Whisper do katalogu danych użytkownika. Dzieje się to tylko raz i wymaga internetu. Potem transkrypcja działa w pełni offline.
 
-☕ Support the Project
+### 🎙️ Jak używać
 
-If you find AI Transkrypt useful and want to support its ongoing open-source development:
+1. Uruchom aplikację i poczekaj na pobranie modelu (tylko za pierwszym razem).
+2. Wybierz język rozpoznawania: **polski**, **angielski** lub **automatyczny**.
+3. **Otwórz plik** (audio lub wideo) albo **nagraj dźwięk systemowy** jednym kliknięciem.
+4. Uruchom transkrypcję. W każdej chwili możesz ją anulować.
+5. Wyeksportuj wynik do **`.txt`** lub **`.pdf`**.
 
-👉 Donate via PayPal (paypal.me/hasz2k)
-📄 License
+### 🛠️ Budowanie ze źródeł
 
-Licensed under AGPL-3.0. See LICENSE for details.
+#### Wymagania deweloperskie
+
+- **Node.js ≥ 20** oraz **pnpm**
+- **Rust** (stabilny toolchain przez [rustup](https://rustup.rs))
+- **Zależności systemowe Tauri v2**: `webkit2gtk-4.1`, `gtk3`, `libayatana-appindicator`, `librsvg`, `cmake`, `clang`, `shaderc` / nagłówki Vulkan
+
+#### Uruchomienie w trybie deweloperskim
+
+```bash
+git clone https://github.com/hasz2k/AI-transkrypt.git
+cd AI-transkrypt
+pnpm install
+pnpm tauri dev
+```
+
+#### Budowanie paczki produkcyjnej
+
+```bash
+pnpm tauri build
+```
+
+Gotowe paczki trafiają do `src-tauri/target/release/bundle/`.
+
+### 🧰 Technologie
+
+| Warstwa | Technologia |
+|---|---|
+| Aplikacja desktopowa | [Tauri v2](https://tauri.app) |
+| Frontend | React 19 |
+| Backend | Rust |
+| Rozpoznawanie mowy | [whisper.cpp](https://github.com/ggerganov/whisper.cpp) + Vulkan |
+| Przechwytywanie dźwięku | PipeWire (`pw-record`) |
+
+### 🗺️ Plan rozwoju
+
+Projekt rozwijany jest w modelu **Open Core**: podstawowa wersja desktopowa pozostaje darmowa i otwarta na licencji AGPL-3.0.
+
+- [x] **Faza 1 — v0.1.x-beta: fundamenty i stabilizacja** *(aktualna)*
+  - [x] Lokalna transkrypcja plików audio/wideo (whisper.cpp + Vulkan)
+  - [x] Nagrywanie dźwięku systemowego przez PipeWire
+  - [x] Eksport do TXT i PDF
+  - [x] Anulowanie zadań w trakcie
+  - [x] Raporty diagnostyczne (opt-in)
+- [ ] **Faza 2 — v0.2.0: rozszerzenie wersji Open Source**
+  - [ ] Wybór modelu Whisper w interfejsie (`base`, `small`, `medium`, `large-v3-turbo`)
+  - [ ] Znaczniki czasu i eksport napisów `.srt` / `.vtt`
+  - [ ] Wybór źródła dźwięku (mikrofon albo konkretna aplikacja/okno w PipeWire)
+  - [ ] Oficjalne wydania na Windows i macOS (Apple Silicon / Intel)
+- [ ] **Faza 3 — wersja Pro**
+  - [ ] Rozpoznawanie mówców (diaryzacja)
+  - [ ] Podsumowania spotkań, listy zadań i tłumaczenia z lokalnymi modelami LLM (np. Ollama)
+  - [ ] Przetwarzanie wsadowe (kolejka wielu plików)
+
+### 🐛 Zgłaszanie błędów
+
+Zgłoś problem w **[GitHub Issues](https://github.com/hasz2k/AI-transkrypt/issues)**. Użyj wbudowanego przycisku **diagnostyki**, żeby skopiować raport środowiska (system, jądro, Wayland/X11, GPU, serwer PipeWire, stan modelu), i wklej go do zgłoszenia. Raport nigdy nie zawiera nagrań ani transkrypcji.
+
+### ☕ Wsparcie projektu
+
+Jeśli aplikacja oszczędza Ci czas i chcesz wesprzeć dalszy rozwój wersji Open Source (m.in. porty na Windows i macOS):
+
+👉 **[Wesprzyj przez PayPal](https://paypal.me/hasz2k)**
+
+### 📄 Licencja
+
+Kod źródłowy wersji Open Source udostępniany jest na licencji **GNU Affero General Public License v3.0 (AGPL-3.0)**. Szczegóły w pliku [LICENSE](LICENSE).
